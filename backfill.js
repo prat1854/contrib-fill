@@ -1,3 +1,6 @@
+// backfill.js
+// Creates 3–4 commits per month for the last 12 months with realistic random dates.
+
 const { execSync } = require("child_process");
 const { existsSync, appendFileSync } = require("fs");
 const path = require("path");
@@ -66,7 +69,8 @@ for (let y = start.getFullYear(), m = start.getMonth();
 
     appendFileSync("log.txt", `update ${when}\n`);
     sh(`git add log.txt`);
-    // ✅ Correct way — use env for GIT_AUTHOR_DATE
+
+    // ✅ Correct commit command — NO "-c GIT_AUTHOR_DATE"
     sh(`git commit -m "Backfill: ${when}"`, {
       env: {
         ...process.env,
@@ -79,6 +83,8 @@ for (let y = start.getFullYear(), m = start.getMonth();
   m++;
   if (m > 11) { m = 0; y++; }
 }
+
+// push once at the end
 sh(`git push -u origin ${BRANCH}`);
 
 console.log("\n✅ Backfill complete! Check your contribution graph in a minute or two.");
