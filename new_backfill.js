@@ -3,7 +3,7 @@ import { appendFileSync, existsSync } from "fs";
 import path from "path";
 
 const NAME = "Prateek Vajpayee";
-const EMAIL = "pvajpayee41@gmail.com";
+const EMAIL = "161966608+prat1854@users.noreply.github.com";
 const BRANCH = "main";
 const LOCAL_DIR = path.resolve(".");
 
