@@ -10,7 +10,7 @@ const NAME  = "Prateek Vajpayee ";                 // git user.name
 const EMAIL = "pvajpayee41@gmail.com";  // git user.email (MUST match a verified GitHub email)
 const REPO_URL = "https://github.com/prat1854/contrib-fill.git";
 const BRANCH = "main";
-const LOCAL_DIR = path.resolve("./contrib-fill");
+const LOCAL_DIR = path.resolve(".");
 // ========================
 
 function sh(cmd, opts = {}) {
