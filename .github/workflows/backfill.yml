@@ -1,8 +1,7 @@
 name: Run Backfill
 
 on:
-  workflow_dispatch: {}   # manually run karoge
-  # NOTE: backdate commits ke liye manual trigger best hai
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -26,10 +25,10 @@ jobs:
           git config user.name "Prateek Vajpayee"
           git config user.email "pvajpayee41@gmail.com"
 
-      - name: Run backfill
-        run: |
-          node backfill.js
+      - name: Run backfill (verbose)
+        run: node backfill.js
 
-      - name: Push changes
+      - name: Push (if anything new)
         run: |
-          git push origin HEAD:main
+          git status
+          git push origin HEAD:main || true
