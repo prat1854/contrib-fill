@@ -26,7 +26,7 @@ jobs:
           git config user.email "pvajpayee41@gmail.com"
 
       - name: Run backfill (verbose)
-        run: node backfill.js
+        run: node new_backfill.js
 
       - name: Push (if anything new)
         run: |
