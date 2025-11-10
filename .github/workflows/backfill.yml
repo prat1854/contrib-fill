@@ -23,7 +23,7 @@ jobs:
       - name: Configure Git identity
         run: |
           git config user.name "Prateek Vajpayee"
-          git config user.email "pvajpayee41@gmail.com"
+          git config user.email "161966608+prat1854@users.noreply.github.com"
 
       - name: Run backfill (verbose)
         run: node new_backfill.js
