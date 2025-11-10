@@ -1,16 +1,12 @@
-// backfill.js
-// Creates 3–4 commits per month for the last 12 months with realistic random dates.
-
 const { execSync } = require("child_process");
-const { existsSync, mkdirSync, appendFileSync } = require("fs");
+const { existsSync, appendFileSync } = require("fs");
 const path = require("path");
 
 // ====== EDIT THESE ======
-const NAME  = "Prateek Vajpayee";              // git user.name (no extra space)
-const EMAIL = "pvajpayee41@gmail.com";         // verified GitHub email
-const REPO_URL = "https://github.com/prat1854/contrib-fill.git";
+const NAME  = "Prateek Vajpayee";           // git user.name (no trailing space)
+const EMAIL = "pvajpayee41@gmail.com";      // verified GitHub email
 const BRANCH = "main";
-const LOCAL_DIR = path.resolve(".");           // current directory (since you're running in repo)
+const LOCAL_DIR = path.resolve(".");        // run inside repo
 // ========================
 
 function sh(cmd, opts = {}) {
@@ -28,7 +24,7 @@ function isoAtNoon(d) {
 
 function pickUniqueDays(year, month, targetCount = 3) {
   const dim = daysInMonth(year, month);
-  const count = Math.floor(Math.random() * 2) + targetCount; // 3 or 4
+  const count = Math.floor(Math.random() * 2) + targetCount; // 3 or 4 per month
   const chosen = new Set();
   while (chosen.size < count) {
     const day = Math.floor(Math.random() * dim) + 1;
@@ -37,11 +33,11 @@ function pickUniqueDays(year, month, targetCount = 3) {
   return [...chosen].sort((a, b) => a - b);
 }
 
-// --- setup local repo
+// --- setup local repo ---
 process.chdir(LOCAL_DIR);
 
-try { 
-  sh(`git checkout ${BRANCH}`); 
+try {
+  sh(`git checkout ${BRANCH}`);
 } catch {
   sh(`git checkout -b ${BRANCH}`);
 }
@@ -55,31 +51,34 @@ if (!existsSync(path.join(LOCAL_DIR, "log.txt"))) {
   sh(`git commit -m "Initial commit"`);
 }
 
-// --- generate dates for last 12 months (excluding future)
+// --- generate backfilled commits ---
 const now = new Date();
-const start = new Date(now.getFullYear(), now.getMonth() - 11, 1); // 11 months ago
+const start = new Date(now.getFullYear(), now.getMonth() - 11, 1);
 
-for (let y = start.getFullYear(), m = start.getMonth(); (y < now.getFullYear()) || (y === now.getFullYear() && m <= now.getMonth()); ) {
+for (let y = start.getFullYear(), m = start.getMonth();
+     (y < now.getFullYear()) || (y === now.getFullYear() && m <= now.getMonth());
+) {
   const days = pickUniqueDays(y, m, 3);
   for (const d of days) {
     const date = new Date(y, m, d);
-    if (date > now) continue; // skip future days
+    if (date > now) continue; // skip future
     const when = isoAtNoon(date);
 
     appendFileSync("log.txt", `update ${when}\n`);
     sh(`git add log.txt`);
-    sh(
-      `git -c "user.name=${NAME}" -c "user.email=${EMAIL}" commit -m "Backfill: ${when}"`,
-      { env: { ...process.env, GIT_AUTHOR_DATE: when, GIT_COMMITTER_DATE: when } }
-    );
+    // ✅ Correct way — use env for GIT_AUTHOR_DATE
+    sh(`git commit -m "Backfill: ${when}"`, {
+      env: {
+        ...process.env,
+        GIT_AUTHOR_DATE: when,
+        GIT_COMMITTER_DATE: when
+      }
+    });
   }
 
-  // move to next month
   m++;
   if (m > 11) { m = 0; y++; }
 }
-
-// push once at the end
 sh(`git push -u origin ${BRANCH}`);
 
 console.log("\n✅ Backfill complete! Check your contribution graph in a minute or two.");
